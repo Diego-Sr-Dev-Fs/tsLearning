@@ -26,3 +26,5 @@ if (loginForm) {
 if (cancelBtn) {
     cancelBtn.addEventListener('click', clearFields);
 }
+console.log("is a message loaded from a new change");
+//# sourceMappingURL=tsPractice0002.js.map
