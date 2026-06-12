@@ -2,7 +2,9 @@
     "compilerOptions": {
         "module": "ESNext",
         "moduleResolution": "Bundler",
-        "target": "ES2024",
+        "target": "ES2024",   
+        "outDir": "./tsPractices/dist",
+        "rootDir": "./tsPractices/src",
         "jsx": "react-jsx",
         "checkJs": false,
         "experimentalDecorators": false,
