@@ -33,4 +33,4 @@ if (cancelBtn) {
   cancelBtn.addEventListener('click', clearFields);
 }
 
-console.log("is a message loaded from a new change")
+console.log("is a message loaded from new changes")
