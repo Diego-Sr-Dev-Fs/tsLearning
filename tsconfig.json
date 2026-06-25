@@ -1,3 +1,9 @@
+/**
+    tsc -w or tsc --watch //Is a command that watches for changes in the files and recompiles them automatically
+    tsc -p tsconfig.json //Is a command that compiles the ts files according to the configuration in the tsconfig.json file
+    tsc ***.ts //Is a command that compiles the ts file to js
+    npx tsx ***.ts //Is a command that runs the ts file without compiling it to js
+**/
 {
     "compilerOptions": {
         "module": "ESNext",
