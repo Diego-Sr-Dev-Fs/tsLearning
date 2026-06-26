@@ -10,5 +10,11 @@ const obj = {
 console.log("the unique key is: ", uniqueKey.toString());
 console.log("the unique property is: ", obj["uniqueKey"]);
 //Explicit types and inference
-
+let charge: string = "Developer Sr";
+let yearsOfExperience: number = 10;
+//Type inference
+let knowLanguages = ["JavaScript", "TypeScript", "Python"];
+let amountOfLanguages = knowLanguages.length; 
+console.log("The amount of languages I know is: ", amountOfLanguages);
+console.log("The languages I know are: ", knowLanguages[0], knowLanguages[1], knowLanguages[2]);
 //tsc
