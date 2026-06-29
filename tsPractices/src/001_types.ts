@@ -7,8 +7,8 @@ const uniqueKey: symbol = Symbol('description');
 const obj = {
   ["uniqueKey"]: 'This is a unique property'
 };
-console.log("the unique key is: ", uniqueKey.toString());
-console.log("the unique property is: ", obj["uniqueKey"]);
+/*console.log("the unique key is: ", uniqueKey.toString());
+console.log("the unique property is: ", obj["uniqueKey"]);*/
 //Explicit types and inference
 let charge: string = "Developer Sr";
 let yearsOfExperience: number = 10;
@@ -16,15 +16,19 @@ let yearsOfExperience: number = 10;
 // For example, you can declare a variable as follows:
 let knowLanguages = ["JavaScript", "TypeScript", "Python"];
 let amountOfLanguages = knowLanguages.length; 
-console.log("The amount of languages I know is: ", amountOfLanguages);
+/*console.log("The amount of languages I know is: ", amountOfLanguages);
 console.log("The language type is: ", typeof knowLanguages[0]);
-console.log("The languages I know are: ", knowLanguages[0], knowLanguages[1], knowLanguages[2]);
+console.log("The languages I know are: ", knowLanguages[0], knowLanguages[1], knowLanguages[2]);*/
+/*******ANY TYPE *******/
 //Type any means that a variable can hold any type of value, 
 // and TypeScript will not perform any type checking on it. This can be useful in certain situations where you need to work with dynamic data or when you are not sure what type of data you will be working with. However, using the any type can also lead to potential issues and bugs in your code, as it allows for more flexibility but also less safety. 
 // Therefore, it's generally recommended to use more specific types whenever possible to take advantage of TypeScript's static type checking capabilities.
 let dynamicValue: any = "This is a string";
-console.log("The dynamic value is: ", dynamicValue);
+/*console.log("The dynamic value is: ", dynamicValue);
 dynamicValue = 42;
 console.log("The dynamic value is: ", dynamicValue);
 dynamicValue = true;
-console.log("The dynamic value is: ", dynamicValue);
+console.log("The dynamic value is: ", dynamicValue);*/
+/*******ARRAY TYPE *******/
+let diffValues=  ["JavaScript", true, 23];
+console.log("The array values are: ", diffValues[0], diffValues[1], diffValues[2]);
