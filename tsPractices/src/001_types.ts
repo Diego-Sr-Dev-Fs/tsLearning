@@ -33,7 +33,7 @@ console.log("The dynamic value is: ", dynamicValue);*/
 /*******ARRAY TYPE *******/
 //array with different types of values
 let diffValues=  ["JavaScript", true, 23];
-console.log("The array values are: ", diffValues[0], diffValues[1], diffValues[2]);
+//console.log("The array values are: ", diffValues[0], diffValues[1], diffValues[2]);
 // array explicit type
 let languages: string[] = ["JavaScript", "TypeScript", "Python"];
 // array with inferred type
@@ -42,7 +42,18 @@ let numbers = [1, 2, 3, 4, 5];
 let readonlyNumbers: readonly number[] = [1, 2, 3, 4, 5];
 //readonlyNumbers.push(6); // Error: Property 'push' does not exist on type 'readonly number[]'.
 
-//UNION ARRAY TYPES: allow to define types, and to push any amount of values that fit in that type. 
-//in the types defined in the union, the order and amount of the values does not matter.
+//UNION ARRAY TYPES
+//Union types only allow the types defined, but the amount and order doesn't matter. 
 let unionValues: (string | number)[] = ["JavaScript", 42, "TypeScript"];
 
+/***TUPLE TYPES */
+//Tuples only admit the same order and amount of values defined in the tuple type.
+let tupleSample: [string, number, boolean];
+tupleSample = ["JQuery", 55, false]; // This is allowed because the order and types of the elements match the defined tuple type.
+console.log("The tuple sample values are: ", tupleSample[0], tupleSample[1], tupleSample[2]);
+//ARRAY OF TUPLES
+let tupleValues: [string, number, boolean][] = [["JavaScript", 42, true]];
+tupleValues[0].push("TypeScript"); // This is allowed because push can add elements to the end of the tuple, but it will not change the defined types of the existing elements.
+tupleValues[1] = ["TypeScript", 42, false]; // This is allowed because the order and types of the elements match the defined tuple type.
+console.log("tuple values:", tupleValues);
+console.log("The tuple values are: ", tupleValues[0], tupleValues[1]);
