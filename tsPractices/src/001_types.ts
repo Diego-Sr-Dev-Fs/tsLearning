@@ -29,6 +29,20 @@ dynamicValue = 42;
 console.log("The dynamic value is: ", dynamicValue);
 dynamicValue = true;
 console.log("The dynamic value is: ", dynamicValue);*/
+
 /*******ARRAY TYPE *******/
+//array with different types of values
 let diffValues=  ["JavaScript", true, 23];
 console.log("The array values are: ", diffValues[0], diffValues[1], diffValues[2]);
+// array explicit type
+let languages: string[] = ["JavaScript", "TypeScript", "Python"];
+// array with inferred type
+let numbers = [1, 2, 3, 4, 5];
+// array readonly type
+let readonlyNumbers: readonly number[] = [1, 2, 3, 4, 5];
+//readonlyNumbers.push(6); // Error: Property 'push' does not exist on type 'readonly number[]'.
+
+//UNION ARRAY TYPES: allow to define types, and to push any amount of values that fit in that type. 
+//in the types defined in the union, the order and amount of the values does not matter.
+let unionValues: (string | number)[] = ["JavaScript", 42, "TypeScript"];
+
