@@ -32,3 +32,20 @@ enum NumericDirection {
   Right,
 }
 console.log("The numeric direction is: ", NumericDirection.Up, NumericDirection.Down, NumericDirection.Left, NumericDirection.Right);
+/*** TYPE ALIASES AND INTERFACES ***/
+/*** ALIASES ***/
+//Allow to customize types like String, Number or more complex types with other names
+type PokemonType = string;
+type TrainerName = string;
+type TrainerAge = number;
+/*** INTERFACES ***/
+interface IPokemon {
+  name: string;
+  type: PokemonType;
+  level: number;
+}
+interface ITrainer {
+  name: TrainerName;
+  age: TrainerAge;
+  team?: string;
+}
