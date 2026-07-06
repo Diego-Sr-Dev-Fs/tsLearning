@@ -53,6 +53,9 @@ interface ITrainer {
 //Intersection types allow to combine multiple types into one
 
 //Union types allow to define a type that can be one of several types. 
+type UnionTrainer = ITrainer | IPokemon;
+
+
 type Status = "success" | "error";
 type Responsable = { status: Status; message: string };
 const useResponsable: Responsable = { status: "success", message: "The operation was successful" };
