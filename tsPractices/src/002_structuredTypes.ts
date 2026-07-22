@@ -51,8 +51,10 @@ interface ITrainer {
 }
 //TYPE ALIASES UNION AND INTERSECTION
 //Intersection types allow to combine multiple types into one
+//Intersection work like a logical AND.
 
 //Union types allow to define a type that can be one of several types. 
+//Union work like a logical OR
 type UnionTrainer = ITrainer | IPokemon;
 
 
