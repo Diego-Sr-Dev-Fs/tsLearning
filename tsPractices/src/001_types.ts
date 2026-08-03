@@ -3,12 +3,14 @@ export {};
 let age: number = 30
 let name: string = "Diego"
 let isWorking:boolean = false;
+//Symbols are unique and immutable data types that can be used as identifiers for object properties. They are often used to create private or hidden properties in objects, as they cannot be accessed or modified directly from outside the object.
 const uniqueKey: symbol = Symbol('description');
 const obj = {
-  ["uniqueKey"]: 'This is a unique property'
+  [uniqueKey]: 'This is a unique property'
 };
-/*console.log("the unique key is: ", uniqueKey.toString());
-console.log("the unique property is: ", obj["uniqueKey"]);*/
+
+console.log("the unique key is: ", uniqueKey.toString());
+console.log("the unique property is: ", obj[uniqueKey]);
 //Explicit types and inference
 let charge: string = "Developer Sr";
 let yearsOfExperience: number = 10;

@@ -32,3 +32,53 @@ enum NumericDirection {
   Right,
 }
 console.log("The numeric direction is: ", NumericDirection.Up, NumericDirection.Down, NumericDirection.Left, NumericDirection.Right);
+/*** TYPE ALIASES AND INTERFACES ***/
+/*** ALIASES ***/
+//Allow to customize types like String, Number or more complex types with other names
+type PokemonType = string;
+type TrainerName = string;
+type TrainerAge = number;
+/*** INTERFACES ***/
+interface IPokemon {
+  name: string;
+  type: PokemonType;
+  level: number;
+}
+interface ITrainer {
+  name: TrainerName;
+  age: TrainerAge;
+  team?: string;
+}
+//TYPE ALIASES UNION AND INTERSECTION
+//Intersection types allow to combine multiple types into one
+//Intersection work like a logical AND.
+
+//Union types allow to define a type that can be one of several types. 
+//Union work like a logical OR
+type UnionTrainer = ITrainer | IPokemon;
+
+
+type Status = "success" | "error";
+type Responsable = { status: Status; message: string };
+const useResponsable: Responsable = { status: "success", message: "The operation was successful" };
+let response: Status = "error"; // This will cause a TypeScript error because "mistake" is not assignable to type 'Status'
+console.log("The response is: ", useResponsable);
+
+/*** INTERFACES ***/
+//Allow to define the structure of an object,
+//and can be extended or implemented by other interfaces or classes.
+
+interface pokeTrainer {
+  region : string;
+  name: string;
+  age: number;
+  initialPoke: string
+}
+
+const trainer1: pokeTrainer = {
+  region: "Kanto",
+  name: "Ash",
+  age: 10,
+  initialPoke: "Pikachu"
+}
+console.log("The trainer is: ", trainer1.region, trainer1.name, trainer1.age, trainer1.initialPoke);
