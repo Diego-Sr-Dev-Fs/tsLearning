@@ -56,3 +56,63 @@ console.log("The total of letters (using Map object) is: ", lettersToNumbersWith
 function getFirstElement<T>(arr: T[]): T | undefined {
   return arr[0];
 }
+
+// 1. GENERIC WITH WRAPPER OBJECT
+// A function that wraps any value into an object with a timestamp.
+interface WrappedValue<T> {
+  value: T;
+  timestamp: Date;
+}
+
+function wrapValue<T>(input: T): WrappedValue<T> {
+  return {
+    value: input,
+    timestamp: new Date()
+  };
+}
+
+const wrappedStr = wrapValue("Hello"); // Type is WrappedValue<string>
+const wrappedNum = wrapValue(100);     // Type is WrappedValue<number>
+console.log("Wrapped String:", wrappedStr);
+
+// 2. GENERIC WITH CONSTRAINTS (extends)
+// A function that only works on objects that have an 'id' property.
+interface Identifiable {
+  id: string | number;
+}
+
+function findById<T extends Identifiable>(items: T[], id: string | number): T | undefined {
+  return items.find(item => item.id === id);
+}
+
+const users = [{ id: 1, name: "Diego" }, { id: 2, name: "Ana" }];
+const foundUser = findById(users, 1);
+console.log("Found User:", foundUser);
+
+// 3. GENERIC CLASS
+// A simple data storage class that can hold any type of data.
+class DataHolder<T> {
+  private data: T[] = [];
+
+  addItem(item: T): void {
+    this.data.push(item);
+  }
+
+  getAll(): T[] {
+    return this.data;
+  }
+}
+
+const stringHolder = new DataHolder<string>();
+stringHolder.addItem("TypeScript");
+stringHolder.addItem("Generics");
+console.log("String Holder Data:", stringHolder.getAll());
+
+// 4. MULTIPLE GENERIC PARAMETERS
+// Merging two different objects into one.
+function merge<T extends object, U extends object>(obj1: T, obj2: U): T & U {
+  return { ...obj1, ...obj2 };
+}
+
+const merged = merge({ name: "Diego" }, { age: 30 });
+console.log("Merged Object:", merged.name, merged.age);
