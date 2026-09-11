@@ -14,6 +14,13 @@ export {};
 type MixedValue = string | number;
 
 function getNumbers(values: MixedValue[]): number[] {
+    const numbers: number[] = [];
+    for (const value of values) {
+        if (typeof value === "number") {
+            numbers.push(value)
+        }
+    }
+    return numbers;
   throw new Error("TODO: solve exercise 1");
 }
 
@@ -22,7 +29,8 @@ function getNumbers(values: MixedValue[]): number[] {
 type Score = [string, number, boolean];
 
 function formatScore(score: Score): string {
-  throw new Error("TODO: solve exercise 2");
+    return `The player ${score[0]} scored: ${score[1]}, and won: ${score[2] ? 'Yes' : 'No'}`;
+  //throw new Error("TODO: solve exercise 2");
 }
 
 // 3. Optional object properties
@@ -33,8 +41,13 @@ interface Profile {
   nickname?: string;
 }
 
+function isEmpty(word: string): boolean {
+  return word.trim() === "";
+}
+
 function describeProfile(profile: Profile): string {
-  throw new Error("TODO: solve exercise 3");
+  //let Name: string = profile.name?`Name: ${profile.name}`:"No name";  
+  return `The users data available. Name: ${isEmpty(profile.name)?"None":profile.name}, Age:${profile.age} ${profile.nickname?", Nickname: "+profile.nickname:""}`;  
 }
 
 // 4. Enums
@@ -111,10 +124,10 @@ class Box<T> {
  * Uncomment these checks after solving each exercise.
  * Add your own edge cases too.
  *
- * console.log(getNumbers(["one", 2, "three", 4]));
- * console.log(formatScore(["Diego", 95, true]));
- * console.log(describeProfile({ name: "Ana", age: 25 }));
- * console.log(moveCharacter(Direction.Left));
+ */ console.log(getNumbers(["one", 2, "three", 4]));
+  console.log(formatScore(["Diego", 95, true]));
+  console.log(describeProfile({ name: "Ana", age: 25, nickname: "" }));
+ /* console.log(moveCharacter(Direction.Left));
  * console.log(describeResult({ status: "success", value: 42 }));
  * console.log(employeeLabel({ name: "Luis", employeeId: 7, department: "IT" }));
  * console.log(countWords(["TS", "js", "ts", "JS", "ts"]));

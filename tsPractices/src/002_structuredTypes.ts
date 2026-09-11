@@ -57,6 +57,18 @@ interface ITrainer {
 //Union work like a logical OR
 type UnionTrainer = ITrainer | IPokemon;
 
+function describeUnionCharacter(character: UnionTrainer): void {
+  console.log("Union character:", character.name);
+
+  if ("age" in character) {
+    console.log("Trainer age:", character.age);
+  } else {
+    console.log("Pokemon type:", character.type);
+  }
+}
+
+describeUnionCharacter({ name: "Ash", age: 10, team: "Kanto" });
+describeUnionCharacter({ name: "Pikachu", type: "Electric", level: 25 });
 
 type Status = "success" | "error";
 type Responsable = { status: Status; message: string };
