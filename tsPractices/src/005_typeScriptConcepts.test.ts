@@ -5,15 +5,24 @@ export {};
  * Run with: npx tsx tsPractices/src/005_typeScriptConcepts.test.ts
  */
 
+// This helper checks a boolean condition.
+// If the condition is false, the program stops immediately with a clear error message.
 function assert(condition: boolean, message: string): void {
     if (!condition) {
         throw new Error(`Test failed: ${message}`);
     }
 }
 
+// This helper compares the actual result with the expected result.
+// Object.is is used to compare values safely, similar to strict equality but with special cases like NaN.
+// If they are different, the test fails and shows both values.
 function assertEqual<T>(actual: T, expected: T, message: string): void {
     assert(Object.is(actual, expected), `${message}. Expected ${String(expected)}, received ${String(actual)}`);
 }
+
+// This file is a test script.
+// You run it, and every `assertEqual(...)` and `assert(...)` is a check for a concept taught in the guide.
+// If one of those checks fails, it means the corresponding code or understanding is wrong and needs to be fixed.
 
 // 1. Primitive types and inference
 function getScore(): number {
@@ -187,6 +196,140 @@ function getName(names: string[], index: number): string {
 
 assertEqual(getName([], 0), "Unknown", "undefined handling");
 assertEqual(({ profile: { name: "Ana" } } as { profile?: { name: string } }).profile?.name, "Ana", "optional chaining");
+
+// 15b. Loops and iteration patterns in TypeScript
+// A for loop runs a block of code while a condition is true.
+// The loop control variable usually starts at 0 and changes after each iteration.
+function sumWithFor(values: number[]): number {
+    let total = 0;
+    for (let index = 0; index < values.length; index += 1) {
+        // On each pass, index points to the current element.
+        total += values[index];
+    }
+    return total;
+}
+
+// Array.map is not the Map class.
+// It is an array method that runs a callback for each element, receives that element as a parameter,
+// and returns a new array with the transformed result.
+// Example with a more realistic case:
+// const products = [
+//   { name: "Keyboard", price: 40 },
+//   { name: "Mouse", price: 25 },
+//   { name: "Monitor", price: 150 }
+// ];
+// const productNames = products.map(product => product.name.toUpperCase());
+// Here each `product` is one object from the original array.
+// The callback receives the whole object, picks a property from it, transforms it,
+// and the final result becomes ["KEYBOARD", "MOUSE", "MONITOR"].
+function doubleValues(values: number[]): number[] {
+    // values is the original array.
+    // The callback receives one element at a time: value.
+    // For each value, we create a new transformed value.
+    // The whole map call returns a new array with all transformed values.
+    return values.map(value => value * 2);
+}
+
+// This example shows a more complex use of map with object data.
+// Each original item is an object, and the callback creates a new object from it.
+function formatProducts(products: Array<{ name: string; price: number }>): Array<{ name: string; price: number; totalLabel: string }> {
+    return products.map(product => ({
+        name: product.name,
+        price: product.price,
+        totalLabel: `${product.name}: $${product.price}`,
+    }));
+}
+//Examples of type of maps
+const nums: number[] = [1, 2, 3];
+
+// 1. One-liner, no return, no {} — implicit return
+const doubled: number[] = nums.map((x: number): number => x * 2);
+
+// 2. One-liner returning an OBJECT — need ( ) around { }
+interface Item { id: number }
+const items: Item[] = nums.map((x: number): Item => ({ id: x }));
+
+// 3. Block with return — need { } and return
+const tripled: number[] = nums.map((x: number): number => {
+  return x * 3;
+});
+
+// 4. Block returning an OBJECT — need { } for block AND { } for object
+const items2: Item[] = nums.map((x: number): Item => {
+  return { id: x };
+});
+
+// A for...of loop is ideal for arrays and iterables when you just need each value.
+// It does not expose the index directly, only the current item.
+function collectNames(users: Array<{ name: string }>): string[] {
+    const names: string[] = [];
+    for (const user of users) {
+        names.push(user.name);
+    }
+    return names;
+}
+
+// A for...in loop iterates over keys of an object.
+// It is useful when you want property names, not values.
+function objectKeys(user: { id: number; name: string; active: boolean }): string[] {
+    const keys: string[] = [];
+    for (const key in user) {
+        keys.push(key);
+    }
+    return keys;
+}
+
+// while keeps running while a condition is true.
+// It is useful when the number of iterations depends on runtime data.
+function countUntil(limit: number): number {
+    let count = 0;
+    while (count < limit) {
+        count += 1;
+    }
+    return count;
+}
+
+// do...while runs the block at least once before checking the condition.
+// This is different from while, which checks first.
+function doWhileExample(): string {
+    let attempts = 0;
+    let result = "";
+
+    do {
+        attempts += 1;
+        result = `attempt ${attempts}`;
+    } while (attempts < 3);
+
+    return result;
+}
+
+// Map stores key/value pairs.
+// It is iterable, and each item is a pair: [key, value].
+// This is different from an array map() callback. One is a data structure; the other is an array method.
+function buildScoreMap(entries: Array<[string, number]>): Map<string, number> {
+    const scores = new Map<string, number>();
+
+    for (const [subject, score] of entries) {
+        scores.set(subject, score);
+    }
+
+    return scores;
+}
+
+assertEqual(sumWithFor([1, 2, 3, 4]), 10, "for loop sums values");
+assertEqual(JSON.stringify(doubleValues([1, 2, 3])), JSON.stringify([2, 4, 6]), "array.map transforms each item");
+assertEqual(JSON.stringify(formatProducts([
+    { name: "Keyboard", price: 40 },
+    { name: "Mouse", price: 25 },
+])), JSON.stringify([
+    { name: "Keyboard", price: 40, totalLabel: "Keyboard: $40" },
+    { name: "Mouse", price: 25, totalLabel: "Mouse: $25" },
+]), "array.map can transform objects");
+assertEqual(JSON.stringify(collectNames([{ name: "Ana" }, { name: "Luis" }])), JSON.stringify(["Ana", "Luis"]), "for...of iterates values");
+assertEqual(JSON.stringify(objectKeys({ id: 1, name: "Ana", active: true })), JSON.stringify(["id", "name", "active"]), "for...in iterates keys");
+assertEqual(countUntil(3), 3, "while loop repeats until condition is false");
+assertEqual(doWhileExample(), "attempt 3", "do...while runs at least once");
+assertEqual(buildScoreMap([["Math", 95], ["TS", 100]]).get("TS"), 100, "Map stores entries by key");
 
 // 16. Type assertions used at a boundary
 function readLength(value: unknown): number {

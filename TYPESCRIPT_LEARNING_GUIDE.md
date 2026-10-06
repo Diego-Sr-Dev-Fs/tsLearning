@@ -76,20 +76,32 @@ type Employee = Person & { employeeId: number };
 
 ## 7. Narrowing and type guards
 
-Narrow a union before using a type-specific operation.
+A type guard is a function or check that tells TypeScript, "if this returns true, then the value has this type." Narrow the union before using a type-specific operation.
 
 ```ts
 function format(value: string | number): string {
+  // typeof narrows the value from string | number to number
   if (typeof value === "number") return value.toFixed(2);
+
+  // Here TypeScript knows value is a string, so this is safe
   return value.toUpperCase();
 }
 
+// A custom type guard: if the function returns true, the value is a string.
 function isString(value: unknown): value is string {
+  // Runtime check: we verify the actual JavaScript value before trusting it.
   return typeof value === "string";
+}
+
+const maybeValue: unknown = "hello";
+
+if (isString(maybeValue)) {
+  // Inside this block, TypeScript narrows maybeValue to string.
+  console.log(maybeValue.toUpperCase());
 }
 ```
 
-Know `typeof`, `instanceof`, `in`, equality checks, and custom predicates.
+Know `typeof`, `instanceof`, `in`, equality checks, and custom predicates. Type guards are useful when a value starts as `unknown`, `string | number`, or another union and must be checked before using type-specific methods.
 
 ## 8. Discriminated unions
 
@@ -107,16 +119,41 @@ function readResult(result: Result): string {
 
 ## 9. Functions
 
-Learn parameter types, return types, optional parameters, default values, rest parameters, and callbacks.
+Learn parameter types, return types, optional parameters, default values, rest parameters, and callbacks. A function type describes a callable contract: what arguments it accepts and what it returns.
 
 ```ts
+// This is a function type. It says: a function that takes two numbers and returns one number.
 type Operation = (left: number, right: number) => number;
 const add: Operation = (left, right) => left + right;
 
+// name is required, title is optional because it has a default value.
 function greet(name: string, title = "Developer"): string {
   return `${title} ${name}`;
 }
+
+// A callback is a function passed to another function to be called later.
+// The function that receives the callback is usually called a higher-order function.
+// It decides when to call it, while the caller decides what to do when it runs.
+function processUser(name: string, onReady: (message: string) => void): void {
+  const message = `User ${name} is ready`;
+
+  // We finish the work first, then call the callback with the result.
+  onReady(message);
+}
+
+// This callback runs after the processUser logic finishes.
+processUser("Ana", message => {
+  console.log(message);
+});
 ```
+
+`(left: number, right: number) => number` is the shape of the function. The `title = "Developer"` parameter means: if no second argument is passed, use "Developer" instead. In the callback example, `onReady` is the function that will be called later, and it receives the computed message.
+
+A callback is a common pattern when one function does some work and then lets an external function respond. The key idea is inversion of control: the outer function decides when the callback is invoked, but the callback itself defines what should happen when that event or result arrives. This is useful for event handlers, async code, iteration helpers, and custom logic flows.
+
+For example, `processUser` does the work of preparing the message and then calls `onReady(message)`. The caller chooses what to do with that message: log it, update the UI, trigger another action, or ignore it. Callbacks are especially important in asynchronous code because the function that starts the work may finish long before the result is ready, so the callback is used as a notification point.
+
+You will also see callbacks in functions like `setTimeout`, DOM event listeners, and array methods such as `map`, `filter`, and `forEach`. In each case, the callback provides the behavior that should run at a later point in time or after a condition is met.
 
 ## 10. Enums
 
@@ -134,27 +171,70 @@ Also understand when a union of string literals is simpler than an enum.
 
 ## 11. Generics
 
-Generics preserve the relationship between input and output types.
+Generics let a function or type work with many data types while preserving the relationship between them. In simple terms: "I don't know the exact type yet, but I will keep it consistent across the function." 
 
 ```ts
+// <T> means: "this function is generic over a type called T".
+// T is a type placeholder, not a runtime value.
+// TypeScript decides what T is based on the arguments you pass.
 function first<T>(items: T[]): T | undefined {
+  // If items is number[], then T is number.
+  // If items is string[], then T is string.
+  // The function returns the same item type, or undefined if the array is empty.
   return items[0];
 }
 
-const firstNumber = first([1, 2, 3]); // number | undefined
+const firstNumber = first([1, 2, 3]); // T is number, so result is number | undefined
+const firstWord = first(["a", "b", "c"]); // T is string, so result is string | undefined
 ```
+
+`T` is a placeholder type. If the input is `number[]`, the output is `number | undefined`; if the input is `string[]`, the output is `string | undefined`.
+
+Not every generic function has to return the exact same type as the parameter. The return type can be the same type, a union with `undefined`, or even a completely different type. The point of generics is to keep the relationship consistent when needed, not to force every function to return the same shape. For example, `function makePair<T, U>(left: T, right: U): [T, U]` returns a tuple with both types, and `function count<T>(items: T[]): number` returns a `number` even though the input items can be anything.
 
 ## 12. Generic constraints
 
-A constraint says what a generic value must provide.
+A constraint says: this generic type must have some required property or behavior. It prevents invalid types from being used.
 
 ```ts
 interface HasId { id: number }
 
+// The `extends` is inside the generic parameter list because we are not creating
+// a class that inherits from HasId. We are saying: "T is a type parameter that
+// must satisfy the contract of HasId".
+// This is different from regular inheritance like `class User extends Person`.
+// In generics, `extends` is a constraint on the allowed type arguments.
 function findById<T extends HasId>(items: T[], id: number): T | undefined {
   return items.find(item => item.id === id);
 }
 ```
+
+`T extends HasId` means: the generic type `T` must at least have an `id: number` property. That makes `item.id` safe inside the function. Without the constraint, TypeScript could not assume every item has an `id`.
+
+The important difference is that `extends` here is not saying "T is a subclass of HasId" in the JavaScript class sense. It means "T must be compatible with the shape of `HasId`". This lets TypeScript accept any object type that has the required `id` property, without forcing you to literally inherit from an interface or class.
+
+A clearer example is a function that works only with objects that have an `id` and a `name`:
+
+```ts
+interface UserLike {
+  id: number;
+  name: string;
+}
+
+function printUser<T extends UserLike>(user: T): void {
+  console.log(user.id, user.name);
+}
+
+const user1 = { id: 1, name: "Ana", role: "admin" };
+const user2 = { id: 2, name: "Luis" };
+
+printUser(user1); // OK: has id and name
+printUser(user2); // OK: has id and name
+
+// printUser({ name: "No id" }); // Error: missing id
+```
+
+This makes the constraint very concrete: TypeScript guarantees that inside `printUser`, the value always has at least the properties required by `UserLike`. The generic constraint is a way to say, "I only accept types that satisfy this contract."
 
 ## 13. Classes and access modifiers
 
@@ -162,17 +242,38 @@ Know constructors, `public`, `private`, `protected`, `readonly`, and parameter p
 
 ```ts
 class Counter {
-  private value = 0;
+  public count = 0; // public is the default; accessible from anywhere
+
+  private value = 0; // private: only inside this class
+
+  protected total = 0; // protected: available in this class and subclasses
+
+  readonly id: string; // readonly: can be assigned only once
+
+  constructor(id: string, public name: string) {
+    this.id = id; // parameter property: public name is created from the constructor parameter
+  }
 
   increment(): void {
     this.value += 1;
+    this.total += 1;
+    this.count += 1;
   }
 
   getValue(): number {
     return this.value;
   }
 }
+
+class BetterCounter extends Counter {
+  showTotals(): void {
+    console.log(this.total); // OK: protected is accessible in subclasses
+    // console.log(this.value); // Error: private is not accessible here
+  }
+}
 ```
+
+`public` is the default visibility and means the member can be accessed anywhere. `private` restricts access to the class itself. `protected` allows access in the class and in subclasses. `readonly` prevents reassignment after initialization. Constructor parameter properties such as `public name: string` shorten the common pattern of declaring a field and assigning it from the constructor.
 
 ## 14. `unknown`, `any`, `never`, and `void`
 
@@ -182,23 +283,73 @@ class Counter {
 - `never` describes impossible values or functions that never return.
 
 ```ts
+// unknown: we do not know the type yet, so we must check before using it.
 function parseInput(value: unknown): string {
   if (typeof value !== "string") throw new Error("Expected text");
   return value.trim();
 }
+
+// any: no type safety, so TS does not help us.
+let data: any = "hello";
+data.toUpperCase(); // OK
+
+data = 42;
+data.toFixed(); // Also OK at compile time, even though it is not a string.
+
+// void: a function that performs work but does not return a meaningful value.
+function logMessage(message: string): void {
+  console.log(message);
+}
+
+// never: impossible value, or a function that always throws or loops forever.
+function fail(message: string): never {
+  throw new Error(message);
+}
+
+// never is also useful in exhaustive checks.
+function handleStatus(status: "success" | "error") {
+  if (status === "success") {
+    console.log("OK");
+    return;
+  }
+
+  return fail("Unexpected status");
+}
 ```
+
+`unknown` is the safe choice when a value comes from outside the code and you need to validate it before using it. `any` turns off checking completely, which is convenient in legacy code but risky for correctness and maintainability. `void` means “this function returns nothing useful,” while `never` means “this code path should never happen” or “this function cannot finish normally.”
 
 ## 15. `null`, `undefined`, and strict null checks
 
-With `strictNullChecks`, possibly missing values must be handled explicitly.
+With `strictNullChecks`, TypeScript treats `null` and `undefined` as real possible values unless you explicitly allow them. This means the compiler will force you to handle missing values instead of silently assuming they always exist.
 
 ```ts
 function getName(names: string[], index: number): string {
+  // names[index] may be undefined if the index is out of range.
+  // ?? "Unknown" means: use the fallback only when the left side is null or undefined.
   return names[index] ?? "Unknown";
 }
 ```
 
-Know optional chaining (`?.`) and nullish coalescing (`??`).
+This is important because JavaScript can return `undefined` for a missing array element, a missing property, or a nullable value from an API. With strict null checks enabled, TypeScript helps you catch those cases before runtime.
+
+```ts
+const user = {
+  profile: {
+    name: "Ana",
+  },
+};
+
+// optional chaining: only access .name if profile exists
+const safeName = user.profile?.name;
+
+// nullish coalescing: use a fallback only for null or undefined
+const displayName = safeName ?? "Guest";
+```
+
+`?.` means “if the left side is not nullish, access the next property; otherwise stop and return `undefined`.” `??` means “if the value is `null` or `undefined`, use the fallback instead.” This is safer than `||` because `||` treats empty strings and `0` as falsey and may replace valid values unexpectedly.
+
+A common mistake is to assume a value is always present just because the type says it is. For example, a function can accept `string | undefined`, but the runtime value may still be `undefined` if the caller passed nothing. Strict null checks are there to make that mismatch visible early and force you to handle it intentionally.
 
 ## 16. Type assertions and non-null assertions
 
@@ -213,19 +364,25 @@ Prefer narrowing and runtime validation over `as` and `!`.
 
 ## 17. Utility types
 
-Utility types transform existing types.
+Utility types transform existing types without rewriting the original object definition. They are shortcuts for common type transformations.
 
 ```ts
 interface User { id: number; name: string; email: string }
-type UserDraft = Partial<User>;
-type UserPreview = Pick<User, "id" | "name">;
-type UserWithoutEmail = Omit<User, "email">;
-type ReadonlyUser = Readonly<User>;
+
+type UserDraft = Partial<User>; // all properties become optional
+
+type UserPreview = Pick<User, "id" | "name">; // keep only selected properties
+
+type UserWithoutEmail = Omit<User, "email">; // remove one property
+
+type ReadonlyUser = Readonly<User>; // all properties become readonly
 ```
 
-Learn `Partial`, `Required`, `Readonly`, `Pick`, `Omit`, `Record`, `Exclude`, `Extract`, and `ReturnType`.
+A `Partial<User>` means every field may be missing. `Pick<User, "id" | "name">` keeps only those two fields. `Omit<User, "email">` removes one field. `Readonly<User>` prevents reassignment of object properties. Learn `Partial`, `Required`, `Readonly`, `Pick`, `Omit`, `Record`, `Exclude`, `Extract`, and `ReturnType`.
 
 ## 18. `keyof`, indexed access, and mapped types
+
+`keyof` extracts the property names of a type. Indexed access gets the value type for those keys. Mapped types transform every property of an existing type.
 
 ```ts
 type UserKey = keyof User; // "id" | "name" | "email"
@@ -233,6 +390,8 @@ type UserValue = User[UserKey]; // number | string
 
 type Optional<T> = { [Key in keyof T]?: T[Key] };
 ```
+
+`keyof User` means: all valid property names of `User`. `User[UserKey]` means: the type of any value from those keys. `Optional<T>` creates a version of `T` where every property becomes optional. This is the logic behind many reusable utility types.
 
 ## 19. Modules
 
