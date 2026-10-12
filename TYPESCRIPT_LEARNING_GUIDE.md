@@ -321,35 +321,60 @@ function handleStatus(status: "success" | "error") {
 
 ## 15. `null`, `undefined`, and strict null checks
 
-With `strictNullChecks`, TypeScript treats `null` and `undefined` as real possible values unless you explicitly allow them. This means the compiler will force you to handle missing values instead of silently assuming they always exist.
+`strictNullChecks` makes `null` and `undefined` distinct types instead of allowing them wherever a value is expected. When it is enabled, a value typed as `string` must be a string; it cannot also be `null` or `undefined`. If a value can be missing, include that possibility in its type and handle it before using it.
 
 ```ts
-function getName(names: string[], index: number): string {
-  // names[index] may be undefined if the index is out of range.
-  // ?? "Unknown" means: use the fallback only when the left side is null or undefined.
-  return names[index] ?? "Unknown";
+function greet(name: string | null): string {
+  if (name === null) {
+    return "Hello, guest";
+  }
+
+  // After the check, TypeScript knows name is a string.
+  return `Hello, ${name.toUpperCase()}`;
+}
+
+greet("Ana");
+greet(null);
+```
+
+Without `strictNullChecks`, TypeScript permits code such as assigning `null` to a `string`, which can lead to runtime errors when string methods are called. With it enabled, the following assignment is a compile-time error:
+
+```ts
+let displayName: string;
+// Error with strictNullChecks: null is not assignable to string.
+displayName = null;
+```
+
+If `undefined` is a valid possibility too, include it in the union and handle it. Optional properties also have this behavior: reading an optional property can produce `undefined`.
+
+```ts
+interface User {
+  name?: string;
+}
+
+function getDisplayName(user: User): string {
+  return user.name ?? "Guest";
+}
+
+const maybeName: string | undefined = undefined;
+const name = maybeName ?? "Unknown";
+```
+
+`?.` means “if the value before this operator is not `null` or `undefined`, continue accessing the property; otherwise return `undefined`.” `??` uses a fallback only for `null` or `undefined`. This is safer than `||` when empty strings or `0` are valid values, because `||` treats those as falsey too.
+
+Think of `strict` as a master switch for TypeScript's stricter checks. Setting it to `true` also turns on `strictNullChecks`, so the compiler will require you to handle `null` and `undefined` as shown above. For example, this is enough in `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true
+  }
 }
 ```
 
-This is important because JavaScript can return `undefined` for a missing array element, a missing property, or a nullable value from an API. With strict null checks enabled, TypeScript helps you catch those cases before runtime.
+You do not need to add `"strictNullChecks": true` as well, because `"strict": true` already enables it. This project currently has both settings; the explicit `strictNullChecks` line repeats what `strict` already turns on.
 
-```ts
-const user = {
-  profile: {
-    name: "Ana",
-  },
-};
-
-// optional chaining: only access .name if profile exists
-const safeName = user.profile?.name;
-
-// nullish coalescing: use a fallback only for null or undefined
-const displayName = safeName ?? "Guest";
-```
-
-`?.` means “if the left side is not nullish, access the next property; otherwise stop and return `undefined`.” `??` means “if the value is `null` or `undefined`, use the fallback instead.” This is safer than `||` because `||` treats empty strings and `0` as falsey and may replace valid values unexpectedly.
-
-A common mistake is to assume a value is always present just because the type says it is. For example, a function can accept `string | undefined`, but the runtime value may still be `undefined` if the caller passed nothing. Strict null checks are there to make that mismatch visible early and force you to handle it intentionally.
+One related detail: strict null checking alone does not make TypeScript treat every array lookup as possibly `undefined`. For that additional protection, enable `noUncheckedIndexedAccess` and still handle a missing element, for example with `names[index] ?? "Unknown"`.
 
 ## 16. Type assertions and non-null assertions
 
