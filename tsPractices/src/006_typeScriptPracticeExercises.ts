@@ -155,9 +155,21 @@ function first<T>(items: T[]): T | undefined |number {
 interface HasId {
   id: number;
 }
-
+/** 
+  * MAP TYPES TO WORK WITH ARRAYS
+  * What you actually need	Use this
+  * Transform every item, keep them all	.map()
+  * Find one item matching a condition	.find()
+  * Check if any item matches (true/false)	.some()
+  * Check if all items match	.every()
+  * Get only the items matching a condition (could be many)	.filter()
+  * Combine all items into one single value (sum, object, etc.)	.reduce() 
+ **/
 function findById<T extends HasId>(items: T[], id: number): T | undefined {
+  //const response: T|undefined = items.find((item) => item.id === id);
+  const response: T|undefined = items[0];
   return items.find((item) => item.id === id);
+  //return items[0];
   throw new Error("TODO: solve exercise 12");
 }
   // TODO: return the item whose id matches, otherwise undefined
@@ -175,11 +187,13 @@ class Counter {
 
   increment(): void {
     // TODO: increase the internal value by 1
-    throw new Error("TODO: solve exercise 13");
+    this.value +=1;
+    //throw new Error("TODO: solve exercise 13");
   }
 
   getValue(): number {
     // TODO: return the current value
+    return this.value;
     throw new Error("TODO: solve exercise 13b");
   }
 }
@@ -187,17 +201,22 @@ class Counter {
 // 14. unknown, any, void, never
 function parseInput(value: unknown): string {
   // TODO: if value is not a string, throw an error; otherwise trim it
+  if (typeof value === "string") {
+    return value.trim();
+  }
   throw new Error("TODO: solve exercise 14");
 }
 
 function fail(message: string): never {
   // TODO: throw an error using the message
-  throw new Error("TODO: solve exercise 14b");
+  throw new Error(message);
+  //throw new Error("TODO: solve exercise 14b");
 }
 
 // 15. null, undefined and strict null checks
 function getName(names: string[], index: number): string {
   // TODO: return the name at that index or "Unknown" if missing
+  return (names[index] !== undefined) ? names[index] : "Unknown";
   throw new Error("TODO: solve exercise 15");
 }
 
@@ -256,8 +275,10 @@ async function runExercises(): Promise<void> {
   assertEqual(findById([{ id: 1, name: "Ana" }, { id: 2, name: "Luis" }], 2)?.name, "Luis", "exercise 12");
 
   const counter = new Counter();
+  console.log("the first value is:"+counter.getValue());
   counter.increment();
   counter.increment();
+  console.log("the value is:"+counter.getValue());
   assertEqual(counter.getValue(), 2, "exercise 13");
 
   assertEqual(parseInput("  text  "), "text", "exercise 14");
