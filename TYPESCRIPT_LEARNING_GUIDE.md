@@ -411,12 +411,16 @@ A `Partial<User>` means every field may be missing. `Pick<User, "id" | "name">` 
 
 ```ts
 type UserKey = keyof User; // "id" | "name" | "email"
-type UserValue = User[UserKey]; // number | string
+type UserValue = User[UserKey]; // number | string: both name and email are strings
 
 type Optional<T> = { [Key in keyof T]?: T[Key] };
+type OptionalUser = Optional<User>;
+// Equivalent to: { id?: number; name?: string; email?: string }
 ```
 
-`keyof User` means: all valid property names of `User`. `User[UserKey]` means: the type of any value from those keys. `Optional<T>` creates a version of `T` where every property becomes optional. This is the logic behind many reusable utility types.
+`keyof User` means all valid property names of `User`: `"id" | "name" | "email"`. `User[UserKey]` asks for the type of a property at any of those keys, so it produces `number | string`: `id` is a number, while `name` and `email` are strings. TypeScript combines duplicate union members, so `number | string | string` simplifies to `number | string`.
+
+In `Optional<T>`, `Key in keyof T` loops over every property key in `T` to create a corresponding property in a new type. `T[Key]` keeps that property's original value type, and `?` makes the property optional. For example, `Optional<User>` allows `{}`, `{ name: "Ana" }`, or `{ id: 1, name: "Ana", email: "ana@example.com" }`, while still requiring any provided `id` to be a number and any provided `name` or `email` to be a string.
 
 ## 19. Modules
 
@@ -434,13 +438,31 @@ import { multiply } from "./math";
 
 ## 20. Async code and promises
 
-Type the resolved value of promises and async functions.
+An `async` function always returns a `Promise`. Use `await` inside another `async` function to wait for that promise and work with its resolved value. This example simulates a network response with a short delay:
 
 ```ts
-async function loadUser(): Promise<{ id: number; name: string }> {
-  return { id: 1, name: "Ana" };
+type User = { id: number; name: string };
+
+function simulateApiResponse(): Promise<User> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve({ id: 1, name: "Ana" }), 500);
+  });
 }
+
+async function loadUser(): Promise<User> {
+  const response = await simulateApiResponse();
+  return response;
+}
+
+async function main(): Promise<void> {
+  const user = await loadUser();
+  console.log(`Loaded user: ${user.name} (id: ${user.id})`);
+}
+
+void main();
 ```
+
+`simulateApiResponse()` returns a `Promise<User>`. `loadUser()` awaits that promise and returns the resolved user, and `main()` awaits `loadUser()` before using the result. Calling `void main()` starts the example without blocking the rest of the program.
 
 ## 21. Declaration files and external data
 

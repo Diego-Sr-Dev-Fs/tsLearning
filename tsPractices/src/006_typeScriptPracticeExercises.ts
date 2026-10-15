@@ -233,12 +233,14 @@ type UserWithoutEmail = Omit<User, "email">;
 
 function buildDraft(): UserDraft {
   // TODO: return an object with only name and maybe id
+  return { name: "Draft User", id:2 };
   throw new Error("TODO: solve exercise 16");
 }
 
 // 17. keyof, indexed access, and mapped types
 function getUserKey(): keyof User {
   // TODO: return the key "email"
+  return "email";
   throw new Error("TODO: solve exercise 17");
 }
 
@@ -275,10 +277,10 @@ async function runExercises(): Promise<void> {
   assertEqual(findById([{ id: 1, name: "Ana" }, { id: 2, name: "Luis" }], 2)?.name, "Luis", "exercise 12");
 
   const counter = new Counter();
-  console.log("the first value is:"+counter.getValue());
+  //console.log("the first value is:"+counter.getValue());
   counter.increment();
   counter.increment();
-  console.log("the value is:"+counter.getValue());
+  //console.log("the value is:"+counter.getValue());
   assertEqual(counter.getValue(), 2, "exercise 13");
 
   assertEqual(parseInput("  text  "), "text", "exercise 14");
@@ -291,7 +293,7 @@ async function runExercises(): Promise<void> {
   assert(caughtError, "exercise 14b");
 
   assertEqual(getName([], 0), "Unknown", "exercise 15");
-  assertEqual(buildDraft().name, undefined, "exercise 16");
+  assertEqual(buildDraft().email, undefined, "exercise 16");
   assertEqual(getUserKey(), "email", "exercise 17");
 
   const scoreMap = buildScoreMap([["Math", 95], ["TS", 100]]);
